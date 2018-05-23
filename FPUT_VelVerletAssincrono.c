@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 12 // 11 vai, 12 da problema
+#define N 14 // 11 vai, 12 da problema
 #define dt 0.001
 #define alfa 0.25
 
@@ -19,14 +19,18 @@ void init(double *u, double *v){
   }
 
   u[0]=0; u[N-1]=0; // massas fixas nas bordas
+
+  return;
 }
 
-double update(double *u, double *v){
+void update(double *u, double *v){
   int i;
   double unov[N], vnov[N];
   
   for(i=1; i<N-1; i++){ // calcula as forças e novas posições
     unov[i]=u[i]+v[i]*dt+a(u,i)*dt*dt/2.; // Velocity Verlet
+  }
+  for(i=1; i<N-1; i++){
     vnov[i]=v[i]+(a(u,i)+a(unov,i))*dt/2.;
   }
   
@@ -34,6 +38,8 @@ double update(double *u, double *v){
     u[i]=unov[i];
     v[i]=vnov[i];
   }
+
+  return;
 }
 
 void anima(double *u){
@@ -42,6 +48,8 @@ void anima(double *u){
   for(i=0; i<N; i++){
     printf("%lf %lf 5\n",(double)i/N, 0.5*u[i]+0.5);
   }
+
+  return;
 }
 
 int main(int argc, char *argv[]){
@@ -52,9 +60,9 @@ int main(int argc, char *argv[]){
   
   for(t=0; t<10000; t+=dt){
     update(u, v);
-    
+
     if((int)(t/dt)%100==0){
-      anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
+      anima(u);
     }
   }
   
