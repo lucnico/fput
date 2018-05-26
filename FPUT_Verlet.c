@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 100
-#define dt 0.02
+#define N 100   // 32 para enerModo
+#define dt 0.03 // 0.001 para enerModo
 #define alfa 0.25
 
 void init(double *u, double *uant){
@@ -42,16 +42,32 @@ void anima(double *u){
   }
 }
 
+void enerModo(double t, double *u, double *v){
+  int i,k;
+  double a[6], da[6];
+    
+  for(k=1; k<6; k++){
+    a[k]=0; da[k]=0;
+    for(i=0; i<N; i++){
+      a[k]+=u[i]*sin(M_PI*k*i/(N-1));
+      da[k]+=v[i]*sin(M_PI*k*i/(N-1));
+    }
+
+    printf("%d %lf %lf\n", k, t, 0.5*da[k]*da[k]+2*pow(sin(M_PI*(double)k/(N-1)/2),2)*a[k]*a[k]);
+  }
+}
+
 int main(int argc, char *argv[]){
   int i;
   double u[N],uant[N],v[N],t, E;
   
   init(u, uant);
   
-  for(t=0; t<100000; t+=dt){
+  for(t=0; t<1000000; t+=dt){  // 9000 para enerModo
     update(u, uant, v);
     
     if((int)(t/dt)%100==0){
+      //enerModo(t, u, v);
       anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
     }
   }

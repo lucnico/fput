@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 14 // 11 vai, 12 da problema
+#define N 32 // 11 vai, 12 da problema
 #define dt 0.001
 #define alfa 0.25
 
@@ -52,16 +52,33 @@ void anima(double *u){
   return;
 }
 
+
+void enerModo(double t, double *u, double *v){
+  int i,k;
+  double a[6], da[6];
+    
+  for(k=1; k<6; k++){
+    a[k]=0; da[k]=0;
+    for(i=0; i<N; i++){
+      a[k]+=u[i]*sin(M_PI*k*i/(N-1));
+      da[k]+=v[i]*sin(M_PI*k*i/(N-1));
+    }
+
+    printf("%d %lf %lf\n", k, t, 0.5*da[k]*da[k]+2*pow(sin(M_PI*(double)k/(N-1)/2),2)*a[k]*a[k]);
+  }
+}
+
 int main(int argc, char *argv[]){
   int i;
   double u[N],v[N],t, E;
   
   init(u, v);
   
-  for(t=0; t<10000; t+=dt){
+  for(t=0; t<9000; t+=dt){
     update(u, v);
 
-    if((int)(t/dt)%100==0){
+    if((int)(t/dt)%1000==0){
+      enerModo(t, u, v);
       anima(u);
     }
   }
