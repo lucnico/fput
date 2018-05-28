@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 100   // 32 para enerModo
-#define dt 0.03 // 0.001 para enerModo
+#define N 32   // 32 para enerModo
+#define dt 0.01 // 0.001 para enerModo
 #define alfa 0.25
 
 void init(double *u, double *uant){
@@ -18,13 +18,15 @@ void init(double *u, double *uant){
   uant[0]=0; uant[N-1]=0;
 }
 
+
+
 double update(double *u, double *uant, double *v){
   int i;
-  double unov[N], a[N];
+  double unov[N], a;
   
   for(i=1; i<N-1; i++){ // calcula acelerações
-    a[i]=(u[i+1]+u[i-1]-2*u[i])+alfa*(pow(u[i+1]-u[i],2)-pow(u[i]-u[i-1],2));
-    unov[i]=2*u[i]-uant[i]+a[i]*dt*dt; // Verlet
+    a=(u[i+1]+u[i-1]-2*u[i])+alfa*(pow(u[i+1]-u[i],2)-pow(u[i]-u[i-1],2));
+    unov[i]=2*u[i]-uant[i]+a*dt*dt; // Verlet
     v[i]=(unov[i]-uant[i])/(2*dt); // calcula a velocidade
   }
   
@@ -63,12 +65,12 @@ int main(int argc, char *argv[]){
   
   init(u, uant);
   
-  for(t=0; t<1000000; t+=dt){  // 9000 para enerModo
+  for(t=0; t<300000; t+=dt){  // 9000 para enerModo
     update(u, uant, v);
     
-    if((int)(t/dt)%100==0){
-      //enerModo(t, u, v);
-      anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
+    if((int)(t/dt)%1000==0){
+      enerModo(t, u, v);
+      //anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
     }
   }
   

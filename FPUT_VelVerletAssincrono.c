@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #define N 32 // 11 vai, 12 da problema
-#define dt 0.001
+#define dt 0.04
 #define alfa 0.25
 
 double a(double *u, int i){
@@ -74,11 +74,22 @@ int main(int argc, char *argv[]){
   
   init(u, v);
   
-  for(t=0; t<9000; t+=dt){
+  for(t=0; t<20000000; t+=dt){
     update(u, v);
 
-    if((int)(t/dt)%1000==0){
-      enerModo(t, u, v);
+    if((int)(t/dt)%100==0){
+      //enerModo(t, u, v);
+      /* double umax=-1e20; */
+      /* 	int imax; */
+      /* for (i=1; i<N; i++) { */
+      /* 	if(u[i]>umax){ */
+      /* 	  umax=u[i]; */
+      /* 	  imax=i; */
+      /* 	} */
+      /* } */
+
+      
+      /* printf("%lf %d %lf\n",t,imax,umax); */
       anima(u);
     }
   }
