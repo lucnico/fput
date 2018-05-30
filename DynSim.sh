@@ -2,8 +2,8 @@
 
 MODE=1
 L=20
-
-while getopts ":l:m:" opt; do
+WIDTH=880
+while getopts ":l:m:w:" opt; do
     case $opt in
 	l)
 	    L=$OPTARG
@@ -11,6 +11,9 @@ while getopts ":l:m:" opt; do
 	m)
 	    MODE=$OPTARG
 	    ;;
+  w)
+      WIDTH=$OPTARG
+      ;;
 	\?)
 	    echo "Invalid option: -$OPTARG" >&2
 	    exit 1
@@ -21,6 +24,5 @@ while getopts ":l:m:" opt; do
 	    ;;
     esac
 done
-
-gcc DynSimOpenGL.c -lm -lGL -lglfw -Dmo=$MODE -DTAM=$L -o DynSim
+gcc DynSimOpenGL.c -lm -lGL -lglfw -Dmo=$MODE -DTAM=$L -D WID=$WIDTH -o DynSim
 ./DynSim

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define N 100   // 32 para enerModo
+#define N 100  // 32 para enerModo
 #define dt 0.01 // 0.001 para enerModo
 #define alfa 0.25
 
@@ -58,19 +58,43 @@ void enerModo(double t, double *u, double *v){
     printf("%d %lf %lf\n", k, t, 0.5*da[k]*da[k]+2*pow(sin(M_PI*(double)k/(N-1)/2),2)*a[k]*a[k]);
   }
 }
+double max(double *fi){
+
+  double xmax=0.0;
+  int i;
+
+  for(i=0;i<N;i++)
+    xmax = (fi[i]>xmax?fi[i]:xmax);
+
+  return xmax;
+}
 
 int main(int argc, char *argv[]){
   int i;
   double u[N],uant[N],v[N],t, E;
-
+  double dif[N],e;
+  dif[0] = 0.0;
   init(u, uant);
 
-  for(t=0; t<300000; t+=dt){  // 9000 para enerModo
+  for(t=0; t<30000; t+=dt){  // 9000 para enerModo
     update(u, uant, v);
 
-    if((int)(t/dt)%500==0){
+    if(((int)(t))%600==0 && t > 20000){
+      // e = max(u);
+      // printf("%lf\n",dif[0]);
+      for(i = 1;i < N;i++){
+        dif[i] = u[i] - u[i-1];
+      }
+
+      e = max(dif);
+      for (i = 0; i < N; i++) {
+        printf("%d\t%lf\n",i,dif[i]/0.05);
+        /* code */
+      }
+      printf("\n\n");
+
       // enerModo(t, u, v);
-      anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
+      // anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
     }
   }
 

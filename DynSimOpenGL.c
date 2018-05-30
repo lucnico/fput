@@ -8,7 +8,7 @@
 
 int L=TAM;
 
-const int WINDOWS_WIDTH = 880;
+const int WINDOWS_WIDTH = WID;
 const int WINDOWS_HEIGHT = 660;
 
 typedef struct
@@ -27,30 +27,42 @@ void drawPointsDemo(int width, int height);
 void drawLineSegment(Vertex v1, Vertex v2, GLfloat width);
 void drawGrid(GLfloat width, GLfloat height, GLfloat grid_width);
 void DrawFrame();
-void gridMode(int tempo, double GRID[600][800]);
+void gridMode(int tempo, double GRID[600][L]);
 void particleMode(int tempo);
 void grid2dMode();
 void particle2dMode();
 void DrawCircle(double x0, double y0, double r);
-
+void SpectreMode();
+void get_resolution();
 int main(void)
 {
   GLFWwindow* window;
   if (!glfwInit())
     exit(EXIT_FAILURE);
+    get_resolution();
   window = glfwCreateWindow(WINDOWS_WIDTH, WINDOWS_HEIGHT,
-			    "Chapter 2: Primitive drawings", NULL, NULL);
+			    "Dynamic Simulator", NULL, NULL);
+
+
   if (!window){
     glfwTerminate();
     exit(EXIT_FAILURE);
   }
   glfwMakeContextCurrent(window);
   // glfwSwapInterval(5);
+
+
   glEnable(GL_POINT_SMOOTH);
   glHint(GL_POINT_SMOOTH_HINT, GL_NICEST);
   glEnable(GL_BLEND);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  double GRID[600][800] = {0.0};
+  double GRID[600][L];
+  int i,j;
+  for (i = 0; i < 600; i++){
+    for(j = 0; j< L; j++){
+      GRID[i][j] = 0.0;
+    }
+  }
   int tempo = 0;
   while (!glfwWindowShouldClose(window))
     {
@@ -83,7 +95,9 @@ int main(void)
       else if(mo==3){
 	particle2dMode(tempo);
       }
-
+      else if(mo==4){
+  SpectreMode(tempo);
+      }
       glfwSwapBuffers(window);
       glfwPollEvents();
     }
@@ -157,7 +171,7 @@ void DrawFrame(){
   // drawLineSegment(v4, v1,3.0f);
 }
 
-void gridMode(int tempo,double GRID[600][800]){
+void gridMode(int tempo,double GRID[600][L]){
   int i,j;
   float cor;
   float yy;
@@ -171,7 +185,7 @@ void gridMode(int tempo,double GRID[600][800]){
   glClear(GL_COLOR_BUFFER_BIT);
   for(j=0;j < 600; j++){
     for(i=0; i<L; i++){
-      v.x = (i - L/2)/440.0;
+      v.x = (i - L/2)/(1.1*L/2);
       v.y = (float) (-j+300.0f)/330.0f;
       v.z = 0.0f;
       v.r = GRID[j][i];
@@ -256,4 +270,50 @@ void particle2dMode(){
     //drawPoint(v,r);
     DrawCircle(v.x, v.y, r+3);
   }
+}
+
+void SpectreMode(){
+  int pos,t;
+  float value;
+  double cor = 1.0;
+  Vertex v1,v2;
+  int Lk = (800/2+1);
+  scanf("%d\t%f",&pos,&value);
+  v1.x = (2.0*pos/Lk) -1.0f;
+  v1.y = (value);
+  v1.z = 0.0f;
+  v1.r = cor;
+  v1.g = cor;
+  v1.b = cor;
+  v1.a = 1.0f;
+  glClear(GL_COLOR_BUFFER_BIT);
+
+  for(t = 1; t < Lk;t++){
+    scanf("%d",&pos);
+    scanf("%f",&value);
+    v2.x = (2.0f*t/Lk)-1.0f;
+    // v2.y = 2.0f*rand()/RAND_MAX - 1.0f;
+    v2.y = value +.7;
+    v2.z = 0.0f;
+    v2.r = cor;
+    v2.g = cor;
+    v2.b = cor;
+    v2.a = 1.0f;
+    drawLineSegment(v1,v2,3.0f);
+    v1.x = v2.x;
+    v1.y = v2.y;
+    v1.z = v2.z;
+    v1.r = cor;
+    v1.g = cor;
+    v1.b = cor;
+    v1.a = 1.0f;
+  }
+}
+void get_resolution() {
+    const GLFWvidmode * mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    int desk_width = mode->width;
+    int desk_height = mode->height;
+    if (desk_width <1.2*WINDOWS_WIDTH){
+      glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+    }
 }
