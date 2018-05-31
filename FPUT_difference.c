@@ -76,10 +76,10 @@ int main(int argc, char *argv[]){
   dif[0] = 0.0;
   init(u, uant);
 
-  for(t=0; t<850000; t++){  // 9000 para enerModo
+  for(t=0; t<200000000; t++){  // 9000 para enerModo
     update(u, uant, v);
 
-    if(t%30 == 0 && t > 800000){
+    if(t%50 == 0 && t > 800000){
       // e = max(u);
       // printf("%lf\n",dif[0]);
       for(i = 1;i < N;i++){
@@ -89,10 +89,11 @@ int main(int argc, char *argv[]){
       e = max(dif);
       // e = 1;
       for (i = 0; i < N; i++) {
-        printf("%d\t%lf\n",i,dif[i]/e);
+        // printf("%d\t%lf\n",i,dif[i]/e); para gnuplot
+        printf("%lf\n",dif[i]/e ); //para DynSim
         /* code */
       }
-      printf("\n\n");
+      printf("\n\n"); //comentar essa linha para o DynSim
 
       // enerModo(t, u, v);
       // anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
