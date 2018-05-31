@@ -1,4 +1,4 @@
-set terminal gif font 'verdana' enhanced animate delay 2 optimize
+set terminal gif font 'verdana' enhanced animate optimize
 set size square
 set output 'acopladoforadefase.gif'
 stats 'graph.dat' nooutput

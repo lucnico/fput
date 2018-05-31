@@ -64,31 +64,32 @@ double max(double *fi){
   int i;
 
   for(i=0;i<N;i++)
-    xmax = (fi[i]>xmax?fi[i]:xmax);
+    xmax = (fabs(fi[i])>xmax?fabs(fi[i]):xmax);
 
   return xmax;
 }
 
 int main(int argc, char *argv[]){
-  int i;
-  double u[N],uant[N],v[N],t, E;
+  int i,t;
+  double u[N],uant[N],v[N],E;
   double dif[N],e;
   dif[0] = 0.0;
   init(u, uant);
 
-  for(t=0; t<30000; t+=dt){  // 9000 para enerModo
+  for(t=0; t<850000; t++){  // 9000 para enerModo
     update(u, uant, v);
 
-    if(((int)(t))%600==0 && t > 20000){
+    if(t%30 == 0 && t > 800000){
       // e = max(u);
       // printf("%lf\n",dif[0]);
       for(i = 1;i < N;i++){
         dif[i] = u[i] - u[i-1];
       }
-
+      dif[0] = dif[1];
       e = max(dif);
+      // e = 1;
       for (i = 0; i < N; i++) {
-        printf("%d\t%lf\n",i,dif[i]/0.05);
+        printf("%d\t%lf\n",i,dif[i]/e);
         /* code */
       }
       printf("\n\n");
