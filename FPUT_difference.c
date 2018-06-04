@@ -9,20 +9,20 @@
 void init(double *u, double *uant){
   int i;
 
-  // for(i=1; i<N-1; i++){ // cond. iniciais
-  //   u[i]=sin(M_PI*(double)i/(N-1));
-  //   uant[i]=sin(M_PI*(double)i/(N-1));
-  // }
+  for(i=1; i<N-1; i++){ // cond. iniciais
+    u[i]=sin(M_PI*(double)i/(N-1));
+    uant[i]=sin(M_PI*(double)i/(N-1));
+  }
 
   //Cond inicial de soliton
-  int t_0 = 0,i_01 = 25,i_02 = 75; // Não colocar t_0 muito grande, nem colocar os i's perto demais da borda
-  for(i=1;i<N-1;i++){
-    u[i] = 1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_01)) + t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_01)) + t_0*sinh(1.0/N)));
-    u[i] += -1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_02)) - t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_02)) - t_0*sinh(1.0/N)));
-    uant[i] = 1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_01)) + t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_01)) + t_0*sinh(1.0/N)));
-    uant[i] += -1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_02)) - t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_02)) - t_0*sinh(1.0/N)));
-
-}
+//   int t_0 = 0,i_01 = 25,i_02 = 75; // Não colocar t_0 muito grande, nem colocar os i's perto demais da borda
+//   for(i=1;i<N-1;i++){
+//     u[i] = 1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_01)) + t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_01)) + t_0*sinh(1.0/N)));
+//     u[i] += -1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_02)) - t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_02)) - t_0*sinh(1.0/N)));
+//     uant[i] = 1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_01)) + t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_01)) + t_0*sinh(1.0/N)));
+//     uant[i] += -1/(2*alfa)*log((1+exp(2.0/N*(i-1-i_02)) - t_0*sinh(1.0/N))/(1+exp(2.0/N*(i-i_02)) - t_0*sinh(1.0/N)));
+//
+// }
 
   u[0]=0; u[N-1]=0; // massas fixas nas bordas
   uant[0]=0; uant[N-1]=0;
@@ -86,10 +86,10 @@ int main(int argc, char *argv[]){
   dif[0] = 0.0;
   init(u, uant);
 
-  for(t=0; t<20000; t++){  // 9000 para enerModo
+  for(t=0; t<1200000; t++){  // 9000 para enerModo
     update(u, uant, v);
 
-    if(t%50 == 0 && t > 000000){
+    if(t%50 == 0 && t > 1100000){
       // e = max(u);
       // printf("%lf\n",dif[0]);
       for(i = 1;i < N;i++){
@@ -106,7 +106,7 @@ int main(int argc, char *argv[]){
       printf("\n\n"); //comentar essa linha para o DynSim
 
       // enerModo(t, u, v);
-      // anima(u);                // ./a.out | ./DynSim.sh -l 32 -m 3
+      // anima(u);                // ./a.out | ./DynSim.sh -l 100 -m 3
     }
   }
 
