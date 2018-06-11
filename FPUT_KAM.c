@@ -5,9 +5,9 @@
 #define N 32
 #define dt 0.001
 #define alfa 0.25
-#define amp_ini 1.0
-#define amp_fin 10.0
-#define na 5 //número de amplitudes
+#define amp_ini 0.1
+#define amp_fin 10.1
+#define na 25 //número de amplitudes
 #define damp (amp_fin - amp_ini)/na
 
 double a(double *u, int i){
@@ -25,7 +25,7 @@ double update(double *u, double *v){
     }
 }
 
-double enerModoK(double t, double *u, double *v, int modo){ //calcula a energia de um modo específico
+double enerModoK(double *u, double *v, int modo){ //calcula a energia de um modo específico
     int i, k;
     double a, ap;
 
@@ -39,11 +39,36 @@ double enerModoK(double t, double *u, double *v, int modo){ //calcula a energia 
     return (0.5*ap*ap+2*pow(sin(M_PI*(double)modo/(N-1)/2),2)*a*a);
 }
 
+double H(double *u, double *v, int deb) {
+    double ener[N/2], ene_tot, pho[N/2], H_tot;
+    int i;
+
+    ene_tot = 0;
+    for (i=0; i<(N/2); i++) {
+        ener[i] = enerModoK(u,v,i);
+        ene_tot += ener[i];
+        pho[i] = 0;
+    }
+
+    H_tot = 0;
+    for (i=1; i<(N/2); i++) {
+        H_tot += (ener[i]/ene_tot)*log(ener[i]/ene_tot);
+    }
+
+    return H_tot*(-1);
+}
+
 int main(int argc, char *argv[]){
     int i, count_rec[na], tmed, tr, k;
     double u[N], v[N], t, ene, amp, ene0, erro;
+    double Haux, Hzero, Hmax, Hinf, eta[na];
 
-    FILE *f1 = fopen("fpu.dat","w");
+    FILE *f1 = fopen("fpu_kam.dat","w");
+
+    Hmax = log(N/2);
+
+    tr = (int) 2*0.38*pow(N,2.5)/(pow(amp_ini*alfa,0.5)); // tempo de recorrência
+    tmed = 1000; //mede a cada tmed unidades de t
 
     for (k=0; k<na; k++) { //for que cobre todas as 'na' amplitudes
         amp = amp_ini+damp*k;
@@ -53,36 +78,40 @@ int main(int argc, char *argv[]){
             v[i] = 0;
         }
 
-    	tr = (int) 2*0.38*pow(N,2.5)/(pow(amp*alfa,0.5)); // tempo de recorrência
-    	tmed = 1000; //mede a cada tmed unidades de t
-
         //teste de super recorrência
-        ene0 = enerModoK(0,u,v,1);
+        ene0 = enerModoK(u,v,1);
         erro = ene0/100000;
         count_rec[k] = 0; //conta quantos "picos" tem a mesma energia que o estado inicial
 
+        //teste de super recorrência 2
+        Hzero = H(u,v,0);
+        Hinf = Hzero;
+
 		t = 0;
-        for (i=0; i<(int)(2*tr/dt); i++){ //super recorrência está geralmente em ~(24*tr/dt)
+        for (i=0; i<(int)(18*tr/dt); i++){ //super recorrência está geralmente em ~(12*tr/dt)
             update(u, v);
 
             if (i%tmed==0){
-                ene = enerModoK(t,u,v,1);
+                ene = enerModoK(u,v,1);
                 if (pow(ene0-ene,2)<erro) count_rec[k]++;
 
+                Haux = H(u,v,1);
+                if (Haux>Hinf) Hinf = Haux;
+
                 if (i%(100*tmed)==0)
-                    fprintf(f1,"%f %f %f\n",amp,2*t*pow(pow(sin(M_PI/(2.0*(N+1)))/(2.0*M_PI),2),0.5),ene);
+                    fprintf(f1,"%f %f %f %f %f\n",amp,2*t*pow(pow(sin(M_PI/(2.0*(N+1)))/(2.0*M_PI),2),0.5), ene, enerModoK(u,v,2), enerModoK(u,v,3));
             }
 			t = i*dt;
         }
 
+
+        eta[k] = (Hmax-Hinf)/(Hmax-Hzero);
     }
 
 	for(k=0; k<na; k++)
-		fprintf(f1, "count_rec para amplitude %.3f: %i\n", amp_ini + k*damp, count_rec[k]);
+		fprintf(f1, "0 %f %i %f\n", amp_ini + k*damp, count_rec[k], eta[k]);
 
     fclose(f1);
 
     return 0;
 }
-
-//plot '/media/leorigon/Leonardo/FPU/fpu.dat' using 2:($1==1.0?$3:1/0)
